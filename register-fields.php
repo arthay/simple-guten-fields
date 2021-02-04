@@ -1,6 +1,6 @@
 <?php
 // Uncomment next line to show post demo fields in post type "Post"
-//add_filter( 'sgf_register_fields', 'sgf_post_fields' );
+add_filter( 'sgf_register_fields', 'sgf_post_fields' );
 
 // Register operator fields
 function sgf_post_fields( $fields_array ) {
@@ -34,43 +34,58 @@ function sgf_post_fields( $fields_array ) {
 
 	// Simple repeater
 	$fields_array[] = [
-		'meta_key'     => 'books',
+		'meta_key'     => 'books1',
 		'control'      => 'repeater',
 		'type'         => 'array',
-		'default'      => [ [ 'title' => '' ] ],
+		'default'      => [
+		    [
+                'title'        => '',
+                'url'          => '',
+                 'site_name'   => '',
+                 'other_links' => [
+                    [
+                        'link_title' => '',
+                        'link'       => '',
+                    ]
+                ]
+            ]
+        ],
 		'show_in_rest' => [
 			'schema' => [
 				'items' => [
 					'type'       => 'object',
 					'properties' => [
-						'title' => [
+						'title'  => [
 							'type' => 'string',
 						],
+						'url'    => [
+                            'type' => 'string',
+                        ],
+                        'site_name' => [
+                            'type' => 'string',
+                        ],
+                        'other_links' => [
+                            'type'    => 'array',
+                            'control' => 'repeater',
+                            'default' => [ [ 'link_title' => '' ] ],
+                            'show_in_rest' => [
+                                'schema' => [
+                                    'items' => [
+                                        'type' => 'object',
+                                        'properties' => [
+                                            'link_title' => [
+                                                'type' => 'string',
+                                            ],
+                                            'link' => [
+                                                'type' => 'string',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ]
+                        ]
 					],
 				],
-			],
-		],
-	];
-
-	// Repeater with multiple fields
-	$fields_array[] = [
-		'meta_key'     => 'external_reviews',
-		'control'      => 'repeater',
-		'type'         => 'array',
-		'default'      => [],
-		'show_in_rest' => [
-			'schema' => [
-				'items' => [
-					'type'       => 'object',
-					'properties' => [
-						'url'       => [
-							'type' => 'string',
-						],
-						'site_name' => [
-							'type' => 'string',
-						],
-					],
-				]
 			],
 		],
 	];
