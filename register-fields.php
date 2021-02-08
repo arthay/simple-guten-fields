@@ -135,10 +135,7 @@ function sgf_post_fields( $fields_array ) {
 		'meta_key'     => 'related_products',
 		'control'      => 'multiselect',
 		'type'         => 'array',
-		'options' => [
-        								[ 'value' => 'EN', 'label' => 'English' ],
-        								[ 'value' => 'ES', 'label' => 'Spanish' ]
-        							],
+		'options'      => ats_get_operators_dropdown(),
 		'show_in_rest' => [
 			'schema' => [
 				'type'  => 'array',
