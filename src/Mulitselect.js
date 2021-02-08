@@ -19,10 +19,39 @@ const isRepeater = (rowIndex) => {
   return typeof rowIndex !== 'undefined';
 };
 let ControlField = withSelect(
-  (select, { field: { label, meta_key, options, isMulti }, row_index, property_key }) => {
+  (select, {
+    field: { label, meta_key, options, isMulti },
+    row_index,
+    property_key,
+    parent_row_index,
+    parent_property_key,
+    isChild
+  }) => {
     const values = select('core/editor').getEditedPostAttribute('meta')[meta_key];
     const key = meta_key + row_index + property_key;
     const isMultiProp = isMulti ?? true;
+
+    if (isChild) {
+      const defaultValue = values[parent_row_index][parent_property_key][row_index][property_key] && Array.isArray(values[parent_row_index][parent_property_key][row_index][property_key])
+        ? values[parent_row_index][parent_property_key][row_index][property_key].map(option => {
+          let labelOption = options.find(propOption => propOption.value == option);
+          let label = labelOption ? labelOption.label : option;
+          return { value: option, label: label };
+        })
+        : [];
+
+      return {
+        axis: 'xy',
+        distance: 4,
+        placeholder: label,
+        isMulti: isMultiProp,
+        value: defaultValue,
+        key,
+        options,
+        label: `Set ${label}`,
+        components: { MultiValue: SortableMultiValue }
+      };
+    }
 
     if (!isRepeater(row_index)) {
       const defaultValue = Array.isArray(values) ? values.map(item => {
@@ -70,7 +99,7 @@ let ControlField = withSelect(
 )(SortableSelect);
 
 ControlField = withDispatch(
-  (dispatch, { field: { meta_key }, row_index, property_key }) => {
+  (dispatch, { field: { meta_key }, row_index, property_key, parent_row_index, parent_property_key, isChild }) => {
     return {
       onChange: (value) => {
         let flatArray = [];
@@ -83,13 +112,31 @@ ControlField = withDispatch(
 
         let newValue = flatArray;
         // In repeater fields we setting the value on the parent meta value before update
-        if (isRepeater(row_index)) {
+
+        if (isChild) {
+          let repeaterValues = select('core/editor').getEditedPostAttribute('meta')?.[meta_key];
+
+          newValue = repeaterValues.map((row, innerIndex) => {
+            if (innerIndex !== parent_row_index) {
+              return row;
+            }
+
+            const nestedValues = row[parent_property_key].map((row, innerIndex) => {
+              return innerIndex === row_index ? { ...row, [property_key]: newValue } : row;
+            });
+
+            return {
+              ...row,
+              [parent_property_key]: nestedValues,
+            };
+          });
+        } else if (isRepeater(row_index)) {
           let repeaterValues = select('core/editor').getEditedPostAttribute('meta')?.[meta_key];
           newValue = repeaterValues.map((row, innerIndex) => {
             return innerIndex === row_index ? { ...row, [property_key]: newValue } : row;
           });
         }
-
+        console.log(newValue, meta_key);
         dispatch('core/editor').editPost({ meta: { [meta_key]: newValue } });
       },
 
@@ -97,7 +144,27 @@ ControlField = withDispatch(
         let values = select('core/editor').getEditedPostAttribute('meta')?.[meta_key];
 
         let newValues;
-        if (!isRepeater(row_index)) {
+        if (isChild) {
+          newValues = values.map((row, innerIndex) => {
+            if (innerIndex !== parent_row_index) {
+              return row;
+            }
+
+            const nestedValues = row[parent_property_key].map((row, innerIndex) => {
+              return innerIndex === row_index
+                ? {
+                  ...row,
+                  [property_key]: arrayMove(row[property_key], oldIndex, newIndex)
+                }
+                : row;
+            });
+
+            return {
+              ...row,
+              [parent_property_key]: nestedValues,
+            };
+          });
+        } else if (!isRepeater(row_index)) {
           newValues = arrayMove(values, oldIndex, newIndex);
         } else {
           newValues = values.map((row, innerIndex) => {
@@ -109,7 +176,7 @@ ControlField = withDispatch(
               : row;
           });
         }
-        
+
         dispatch('core/editor').editPost({ meta: { [meta_key]: newValues } });
       }
     };

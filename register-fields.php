@@ -79,6 +79,16 @@ function sgf_post_fields( $fields_array ) {
                                             'link' => [
                                                 'type' => 'string',
                                             ],
+                                            'languages' => [
+                                                'type'    => 'array',
+                                                'control' => 'multiselect',
+                                                'options' => [
+                                                    [ 'value' => 'EN', 'label' => 'English' ],
+                                                    [ 'value' => 'ES', 'label' => 'Spanish' ]
+                                                ],
+                                                'default' => [],
+                                                'label'   => 'Select States'
+                                            ],
                                         ],
                                     ],
                                 ],
@@ -125,7 +135,10 @@ function sgf_post_fields( $fields_array ) {
 		'meta_key'     => 'related_products',
 		'control'      => 'multiselect',
 		'type'         => 'array',
-		'options'      => ats_get_operators_dropdown(),
+		'options' => [
+        								[ 'value' => 'EN', 'label' => 'English' ],
+        								[ 'value' => 'ES', 'label' => 'Spanish' ]
+        							],
 		'show_in_rest' => [
 			'schema' => [
 				'type'  => 'array',
