@@ -10921,37 +10921,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _controlsIndex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./controlsIndex */ "./src/controlsIndex.js");
 
 
-var select = wp.data.select;
 
 var InnerControlComponent = function InnerControlComponent(_ref) {
-  var _field$control, _select$getEditedPost;
+  var _field$control;
 
   var key = _ref.key,
-      meta_key = _ref.meta_key,
       field = _ref.field,
       row_index = _ref.row_index,
       property_key = _ref.property_key,
       repeater_record_label = _ref.repeater_record_label,
-      parent_property_key = _ref.parent_property_key,
-      parent_row_index = _ref.parent_row_index,
-      parent_control = _ref.parent_control,
-      isChild = _ref.isChild;
+      values = _ref.values,
+      _onChange = _ref.onChange;
   var controlFieldKey = (_field$control = field.control) !== null && _field$control !== void 0 ? _field$control : 'text';
-  isChild = !!(isChild || field.control === parent_control);
   var ControlField = _controlsIndex__WEBPACK_IMPORTED_MODULE_1__["default"][controlFieldKey];
-  var repeaterValues = (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
   return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(ControlField, {
     key: key,
     field: field,
     row_index: row_index,
     property_key: property_key,
-    parent_property_key: parent_property_key,
     repeater_record_label: repeater_record_label,
-    repeater_values: repeaterValues,
-    parent_row_index: parent_row_index,
-    parent: parent,
     label: field.label,
-    isChild: isChild
+    values: values[row_index][property_key],
+    onChange: function onChange(newValues) {
+      return _onChange(newValues, property_key, row_index);
+    },
+    isChild: true
   });
 };
 
@@ -11068,16 +11062,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-
 
 
 var _wp$data = wp.data,
     withSelect = _wp$data.withSelect,
-    select = _wp$data.select,
     withDispatch = _wp$data.withDispatch;
 var SortableMultiValue = Object(react_sortable_hoc__WEBPACK_IMPORTED_MODULE_5__["SortableElement"])(function (props) {
   var onMouseDown = function onMouseDown(e) {
@@ -11106,103 +11094,53 @@ var ControlField = withSelect(function (select, _ref) {
       isMulti = _ref$field.isMulti,
       row_index = _ref.row_index,
       property_key = _ref.property_key,
-      parent_row_index = _ref.parent_row_index,
-      parent_property_key = _ref.parent_property_key,
-      isChild = _ref.isChild;
-  var values = select('core/editor').getEditedPostAttribute('meta')[meta_key];
+      values = _ref.values,
+      onSortEndHandler = _ref.onSortEndHandler;
+  values = isRepeater(row_index) ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
   var key = meta_key + row_index + property_key;
   var isMultiProp = isMulti !== null && isMulti !== void 0 ? isMulti : true;
-
-  if (isChild) {
-    var _defaultValue = values[parent_row_index][parent_property_key][row_index][property_key] && Array.isArray(values[parent_row_index][parent_property_key][row_index][property_key]) ? values[parent_row_index][parent_property_key][row_index][property_key].map(function (option) {
-      var labelOption = options.find(function (propOption) {
-        return propOption.value == option;
-      });
-      var label = labelOption ? labelOption.label : option;
-      return {
-        value: option,
-        label: label
-      };
-    }) : [];
-
-    return {
-      axis: 'xy',
-      distance: 4,
-      placeholder: label,
-      isMulti: isMultiProp,
-      value: _defaultValue,
-      key: key,
-      options: options,
-      label: "Set ".concat(label),
-      components: {
-        MultiValue: SortableMultiValue
-      }
-    };
-  }
-
-  if (!isRepeater(row_index)) {
-    var _defaultValue2 = Array.isArray(values) ? values.map(function (item) {
-      var isOption = options.find(function (option) {
-        return option.value == item;
-      });
-      var label = values;
-
-      if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(isOption) === 'object' && isOption !== null) {
-        label = isOption.label;
-      }
-
-      return {
-        value: item,
-        label: label
-      };
-    }) : [];
-
-    return {
-      axis: 'xy',
-      distance: 4,
-      isMulti: isMultiProp,
-      placeholder: label,
-      value: _defaultValue2,
-      key: key,
-      options: options,
-      label: "Set ".concat(label),
-      components: {
-        MultiValue: SortableMultiValue
-      }
-    };
-  }
-
-  var defaultValue = values[row_index][property_key] && Array.isArray(values[row_index][property_key]) ? values[row_index][property_key].map(function (option) {
-    var labelOption = options.find(function (propOption) {
-      return propOption.value == option;
+  var defaultValue = Array.isArray(values) ? values.map(function (item) {
+    var isOption = options.find(function (option) {
+      return option.value == item;
     });
-    var label = labelOption ? labelOption.label : option;
+    var label = values;
+
+    if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(isOption) === 'object' && isOption !== null) {
+      label = isOption.label;
+    }
+
     return {
-      value: option,
+      value: item,
       label: label
     };
   }) : [];
   return {
     axis: 'xy',
     distance: 4,
-    placeholder: label,
     isMulti: isMultiProp,
+    placeholder: label,
     value: defaultValue,
     key: key,
     options: options,
     label: "Set ".concat(label),
     components: {
       MultiValue: SortableMultiValue
+    },
+    onSortEnd: function onSortEnd(_ref2) {
+      var oldIndex = _ref2.oldIndex,
+          newIndex = _ref2.newIndex;
+      return onSortEndHandler({
+        oldIndex: oldIndex,
+        newIndex: newIndex
+      }, values);
     }
   };
 })(SortableSelect);
-ControlField = withDispatch(function (dispatch, _ref2) {
-  var meta_key = _ref2.field.meta_key,
-      row_index = _ref2.row_index,
-      property_key = _ref2.property_key,
-      parent_row_index = _ref2.parent_row_index,
-      parent_property_key = _ref2.parent_property_key,
-      isChild = _ref2.isChild;
+ControlField = withDispatch(function (dispatch, _ref3) {
+  var meta_key = _ref3.field.meta_key,
+      row_index = _ref3.row_index,
+      property_key = _ref3.property_key,
+      _onChange = _ref3.onChange;
   return {
     onChange: function onChange(value) {
       var flatArray = [];
@@ -11218,60 +11156,25 @@ ControlField = withDispatch(function (dispatch, _ref2) {
 
       var newValue = flatArray; // In repeater fields we setting the value on the parent meta value before update
 
-      if (isChild) {
-        var _select$getEditedPost;
+      if (_onChange) {
+        _onChange(newValue, property_key, row_index);
 
-        var repeaterValues = (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
-        newValue = repeaterValues.map(function (row, innerIndex) {
-          if (innerIndex !== parent_row_index) {
-            return row;
-          }
-
-          var nestedValues = row[parent_property_key].map(function (row, innerIndex) {
-            return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, newValue)) : row;
-          });
-          return _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, parent_property_key, nestedValues));
-        });
-      } else if (isRepeater(row_index)) {
-        var _select$getEditedPost2;
-
-        var _repeaterValues = (_select$getEditedPost2 = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost2 === void 0 ? void 0 : _select$getEditedPost2[meta_key];
-
-        newValue = _repeaterValues.map(function (row, innerIndex) {
-          return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, newValue)) : row;
-        });
+        return;
       }
 
-      console.log(newValue, meta_key);
       dispatch('core/editor').editPost({
         meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValue)
       });
     },
-    onSortEnd: function onSortEnd(_ref3) {
-      var _select$getEditedPost3;
+    onSortEndHandler: function onSortEndHandler(_ref4, values) {
+      var oldIndex = _ref4.oldIndex,
+          newIndex = _ref4.newIndex;
+      var newValues = Object(_utils__WEBPACK_IMPORTED_MODULE_6__["arrayMove"])(values, oldIndex, newIndex);
 
-      var oldIndex = _ref3.oldIndex,
-          newIndex = _ref3.newIndex;
-      var values = (_select$getEditedPost3 = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost3 === void 0 ? void 0 : _select$getEditedPost3[meta_key];
-      var newValues;
+      if (_onChange) {
+        _onChange(newValues, property_key, row_index);
 
-      if (isChild) {
-        newValues = values.map(function (row, innerIndex) {
-          if (innerIndex !== parent_row_index) {
-            return row;
-          }
-
-          var nestedValues = row[parent_property_key].map(function (row, innerIndex) {
-            return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, Object(_utils__WEBPACK_IMPORTED_MODULE_6__["arrayMove"])(row[property_key], oldIndex, newIndex))) : row;
-          });
-          return _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, parent_property_key, nestedValues));
-        });
-      } else if (!isRepeater(row_index)) {
-        newValues = Object(_utils__WEBPACK_IMPORTED_MODULE_6__["arrayMove"])(values, oldIndex, newIndex);
-      } else {
-        newValues = values.map(function (row, innerIndex) {
-          return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, Object(_utils__WEBPACK_IMPORTED_MODULE_6__["arrayMove"])(row[property_key], oldIndex, newIndex))) : row;
-        });
+        return;
       }
 
       dispatch('core/editor').editPost({
@@ -11301,118 +11204,110 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
 var _wp$data = wp.data,
     withDispatch = _wp$data.withDispatch,
     useSelect = _wp$data.useSelect;
+var _wp$element = wp.element,
+    useMemo = _wp$element.useMemo,
+    useCallback = _wp$element.useCallback;
 
 var ControlField = function ControlField(_ref) {
-  var _show_in_rest$schema, _show_in_rest$schema$;
-
-  var addItem = _ref.addItem,
-      removeItem = _ref.removeItem,
-      _ref$field = _ref.field,
+  var _ref$field = _ref.field,
       meta_key = _ref$field.meta_key,
       label = _ref$field.label,
       show_in_rest = _ref$field.show_in_rest,
       control = _ref$field.control,
       controlsIndex = _ref.controlsIndex,
       property_key = _ref.property_key,
-      row_index = _ref.row_index,
-      isChild = _ref.isChild;
-  var properties = show_in_rest === null || show_in_rest === void 0 ? void 0 : (_show_in_rest$schema = show_in_rest.schema) === null || _show_in_rest$schema === void 0 ? void 0 : (_show_in_rest$schema$ = _show_in_rest$schema.items) === null || _show_in_rest$schema$ === void 0 ? void 0 : _show_in_rest$schema$.properties;
-  var propertiesKeys = Object.entries(properties).map(function (item) {
-    return item[0];
-  });
-  var repeaterValues = useSelect(function (select) {
-    var _select$getEditedPost;
+      onChange = _ref.onChange,
+      values = _ref.values,
+      _ref$isChild = _ref.isChild,
+      isChild = _ref$isChild === void 0 ? false : _ref$isChild;
+  var properties = useMemo(function () {
+    var _show_in_rest$schema, _show_in_rest$schema$;
 
-    return (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
-  });
-  var loopRepeaterValues = repeaterValues;
-  var innerText = '';
-
-  if (isChild) {
-    loopRepeaterValues = repeaterValues[row_index][property_key];
-    innerText = 'Inner ';
-  }
-
-  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
-    style: {
-      marginLeft: !isChild ? 0 : 10
+    return show_in_rest === null || show_in_rest === void 0 ? void 0 : (_show_in_rest$schema = show_in_rest.schema) === null || _show_in_rest$schema === void 0 ? void 0 : (_show_in_rest$schema$ = _show_in_rest$schema.items) === null || _show_in_rest$schema$ === void 0 ? void 0 : _show_in_rest$schema$.properties;
+  }, [show_in_rest]);
+  var propertiesKeys = useMemo(function () {
+    return Object.entries(properties).map(function (item) {
+      return item[0];
+    });
+  }, [properties]);
+  var wrapperStyles = useMemo(function () {
+    if (isChild) {
+      return {
+        marginLeft: 5,
+        marginTop: 10,
+        border: '1px solid hsl(0, 0%, 80%)',
+        padding: '10px 5px'
+      };
     }
-  }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("h3", null, "".concat(innerText).concat(label), " (Repeater field):"), Array.isArray(loopRepeaterValues) && loopRepeaterValues.map(function (row, index) {
+
+    return {};
+  }, [isChild]);
+  var addItem = useCallback(function () {
+    var newValues = [];
+
+    if (values && values.length) {
+      newValues = values.slice(0);
+    }
+
+    newValues.push({});
+    onChange(newValues);
+  }, [values, onChange]);
+  var removeItem = useCallback(function (index) {
+    if (confirm("Confirm delete")) {
+      var newValues = values.slice(0);
+      newValues = newValues.filter(function (obj, loopIndex) {
+        return loopIndex !== index;
+      });
+      onChange(newValues);
+    }
+  }, [values, onChange]);
+  var onChangeHandler = useCallback(function (innerValues, inner_property_key, inner_row_index) {
+    var newValues = values.slice(0);
+    newValues = newValues.map(function (row, index) {
+      return index === inner_row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, inner_property_key, innerValues)) : row;
+    });
+    onChange(newValues);
+  }, [values]);
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
+    style: wrapperStyles
+  }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("h3", null, "".concat(label), " (Repeater field):"), Array.isArray(values) && values.map(function (row, index) {
     return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
       key: "repeaterValues".concat(index).concat(meta_key)
-    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("b", null, innerText, "Repeater Record ", index + 1, ":")), propertiesKeys.map(function (propertyKey) {
+    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("b", null, "Repeater Record ", index + 1, ":")), propertiesKeys.map(function (propertyKey) {
       var innerField = properties[propertyKey];
       innerField.meta_key = meta_key;
       innerField.label = label;
       return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(_InnerControlComponent__WEBPACK_IMPORTED_MODULE_2__["default"], {
         key: index + property_key,
         field: innerField,
-        row_index: index,
         parent_control: control,
-        parent_row_index: row_index,
+        row_index: index,
         property_key: propertyKey,
-        parent_property_key: property_key,
         repeater_record_label: "".concat(label, " ").concat(propertyKey),
-        repeater_values: loopRepeaterValues,
+        values: values,
         control_index: controlsIndex,
-        isChild: isChild
+        onChange: onChangeHandler
       });
     }), index > 0 && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("button", {
       onClick: function onClick() {
-        return removeItem(meta_key, index, repeaterValues, isChild, row_index, property_key);
+        return removeItem(index);
       }
-    }, "Remove ", innerText, "line ", index + 1), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("hr", null));
+    }, "Remove line ", index + 1), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("hr", null));
   }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("button", {
     style: {
       marginTop: '10px'
     },
-    onClick: function onClick() {
-      return addItem(meta_key, repeaterValues, isChild, row_index, property_key);
-    }
-  }, "Add ", innerText, "Item"));
+    onClick: addItem
+  }, "Add Item"));
 };
-
-ControlField = withDispatch(function (dispatch) {
-  return {
-    addItem: function addItem(meta_key, repeaterValues, isChild, row_index, property_key) {
-      if (isChild) {
-        if (repeaterValues[row_index][property_key]) {
-          repeaterValues[row_index][property_key].push({});
-        } else {
-          repeaterValues[row_index][property_key] = [{}];
-        }
-      } else {
-        repeaterValues.push({});
-      }
-
-      var repeaterValuesCopy = repeaterValues.splice(0);
-      dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, repeaterValuesCopy)
-      });
-    },
-    removeItem: function removeItem(meta_key, index, repeaterValues, isChild, row_index, property_key) {
-      if (confirm("Confirm delete")) {
-        if (!isChild) {
-          repeaterValues = repeaterValues.filter(function (obj, loopIndex) {
-            return loopIndex !== index;
-          });
-        } else {
-          repeaterValues[row_index][property_key] = repeaterValues[row_index][property_key].filter(function (obj, loopIndex) {
-            return loopIndex !== index;
-          });
-        }
-
-        var repeaterValuesCopy = repeaterValues.splice(0);
-        dispatch('core/editor').editPost({
-          meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, repeaterValuesCopy)
-        });
-      }
-    }
-  };
-})(ControlField);
 
 var RepeaterControl = function RepeaterControl(_ref2) {
   var field = _ref2.field,
@@ -11420,17 +11315,48 @@ var RepeaterControl = function RepeaterControl(_ref2) {
       property_key = _ref2.property_key,
       row_index = _ref2.row_index,
       _ref2$isChild = _ref2.isChild,
-      isChild = _ref2$isChild === void 0 ? false : _ref2$isChild;
+      isChild = _ref2$isChild === void 0 ? false : _ref2$isChild,
+      values = _ref2.values,
+      onChange = _ref2.onChange,
+      editPost = _ref2.editPost;
+
+  if (!values) {
+    values = useSelect(function (select) {
+      var _select$getEditedPost;
+
+      return (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[field.meta_key];
+    });
+  }
+
+  var onChangeHandler = useCallback(function (newValues) {
+    if (!onChange) {
+      editPost(newValues);
+      return;
+    }
+
+    onChange(newValues);
+  }, [editPost]);
   return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(ControlField, {
+    values: values,
     field: field,
     controlsIndex: controlsIndex,
     property_key: property_key,
     row_index: row_index,
-    isChild: isChild
+    isChild: isChild,
+    onChange: onChangeHandler
   });
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (RepeaterControl);
+/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref3) {
+  var meta_key = _ref3.field.meta_key;
+  return {
+    editPost: function editPost(newValues) {
+      dispatch('core/editor').editPost({
+        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValues)
+      });
+    }
+  };
+})(RepeaterControl));
 
 /***/ }),
 
@@ -11505,73 +11431,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
 var _wp$data = wp.data,
     withSelect = _wp$data.withSelect,
-    select = _wp$data.select,
     withDispatch = _wp$data.withDispatch;
 var TextControl = wp.components.TextControl;
-var ControlField = withSelect(function (select, props) {
-  var _props$field = props.field,
-      label = _props$field.label,
-      meta_key = _props$field.meta_key;
-  var row_index = props.row_index,
-      property_key = props.property_key,
-      parent_row_index = props.parent_row_index,
-      parent_property_key = props.parent_property_key,
-      isChild = props.isChild;
-  var value = select('core/editor').getEditedPostAttribute('meta')[meta_key];
+var ControlField = withSelect(function (select, _ref) {
+  var _ref$field = _ref.field,
+      label = _ref$field.label,
+      meta_key = _ref$field.meta_key,
+      row_index = _ref.row_index,
+      property_key = _ref.property_key,
+      values = _ref.values;
+  var value = row_index !== undefined ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
   var key = meta_key + row_index + property_key;
-
-  if (typeof row_index === 'undefined') {
-    return {
-      value: value,
-      key: key,
-      label: "Set ".concat(label)
-    };
-  }
-
-  var returnedValue = !isChild ? value[row_index][property_key] : value[parent_row_index][parent_property_key][row_index][property_key];
   return {
-    value: returnedValue,
+    value: value,
     key: key,
-    label: "Set ".concat(property_key.replace('_', ' '))
+    label: "Set ".concat((property_key || '').replace('_', ' ') || label)
   };
 })(TextControl);
-/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, props) {
-  var meta_key = props.field.meta_key;
-  var row_index = props.row_index,
-      property_key = props.property_key,
-      isChild = props.isChild,
-      parent_row_index = props.parent_row_index,
-      parent_property_key = props.parent_property_key;
+/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref2) {
+  var meta_key = _ref2.field.meta_key,
+      row_index = _ref2.row_index,
+      property_key = _ref2.property_key,
+      _onChange = _ref2.onChange;
   return {
     onChange: function onChange(value) {
-      var newValue = value;
+      if (_onChange) {
+        _onChange(value, property_key, row_index);
 
-      if (typeof row_index !== 'undefined') {
-        var _select$getEditedPost;
-
-        var repeaterValues = (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
-
-        if (!isChild) {
-          newValue = repeaterValues.map(function (row, innerIndex) {
-            return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, value)) : row;
-          });
-        } else {
-          repeaterValues[parent_row_index][parent_property_key] = repeaterValues[parent_row_index][parent_property_key].map(function (row, innerIndex) {
-            return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, value)) : row;
-          });
-          newValue = repeaterValues.splice(0);
-        }
+        return;
       }
 
       dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValue)
+        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
       });
     }
   };
