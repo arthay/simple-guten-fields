@@ -33,12 +33,109 @@ function sgf_post_fields( $fields_array ) {
 	];
 
 	// Simple repeater
+// 	$fields_array[] = [
+// 		'meta_key'     => 'books1',
+// 		'control'      => 'repeater',
+// 		'type'         => 'array',
+// 		'default'      => [
+// 		    [
+//                 'title'        => '',
+//                 'url'          => '',
+//                  'site_name'   => '',
+//                  'other_links' => [
+//                     [
+//                         'link_title' => '',
+//                         'link'       => '',
+//                     ]
+//                 ]
+//             ]
+//         ],
+// 		'show_in_rest' => [
+// 			'schema' => [
+// 				'items' => [
+// 					'type'       => 'object',
+// 					'properties' => [
+// 						'title'  => [
+// 							'type' => 'string',
+// 						],
+// 						'url'    => [
+//                             'type' => 'string',
+//                         ],
+//                         'site_name' => [
+//                             'type' => 'string',
+//                         ],
+//                         'other_links' => [
+//                             'type'    => 'array',
+//                             'control' => 'repeater',
+//                             'default' => [ [ 'link_title' => '' ] ],
+//                             'show_in_rest' => [
+//                                 'schema' => [
+//                                     'items' => [
+//                                         'type' => 'object',
+//                                         'properties' => [
+//                                             'link_title' => [
+//                                                 'type' => 'string',
+//                                             ],
+//                                             'link' => [
+//                                                 'type' => 'string',
+//                                             ],
+//                                             'languages' => [
+//                                                 'type'    => 'array',
+//                                                 'control' => 'multiselect',
+//                                                 'options' => [
+//                                                     [ 'value' => 'EN', 'label' => 'English' ],
+//                                                     [ 'value' => 'ES', 'label' => 'Spanish' ]
+//                                                 ],
+//                                                 'default' => [],
+//                                                 'label'   => 'Select States'
+//                                             ],
+//                                             'other_links' => [
+//                                                 'type'    => 'array',
+//                                                 'control' => 'repeater',
+//                                                 'default' => [ [ 'link_title' => '' ] ],
+//                                                 'show_in_rest' => [
+//                                                     'schema' => [
+//                                                         'items' => [
+//                                                             'type' => 'object',
+//                                                             'properties' => [
+//                                                                 'link_title' => [
+//                                                                     'type' => 'string',
+//                                                                 ],
+//                                                                 'link' => [
+//                                                                     'type' => 'string',
+//                                                                 ],
+//                                                                 'languages' => [
+//                                                                     'type'    => 'array',
+//                                                                     'control' => 'multiselect',
+//                                                                     'options' => [
+//                                                                         [ 'value' => 'EN', 'label' => 'English' ],
+//                                                                         [ 'value' => 'ES', 'label' => 'Spanish' ]
+//                                                                     ],
+//                                                                     'default' => [],
+//                                                                     'label'   => 'Select States'
+//                                                                 ],
+//                                                             ],
+//                                                         ],
+//                                                     ],
+//                                                 ]
+//                                             ]
+//                                         ],
+//                                     ],
+//                                 ],
+//                             ]
+//                         ]
+// 					],
+// 				],
+// 			],
+// 		],
+// 	];
+
 	$fields_array[] = [
-		'meta_key'     => 'books1',
-		'control'      => 'repeater',
-		'type'         => 'array',
-		'default'      => [
-		    [
+        'meta_key'     => 'books',
+        'control'      => 'repeater',
+        'type'         => 'array',
+        'default'      => [
+            [
                 'title'        => '',
                 'url'          => '',
                  'site_name'   => '',
@@ -50,19 +147,29 @@ function sgf_post_fields( $fields_array ) {
                 ]
             ]
         ],
-		'show_in_rest' => [
-			'schema' => [
-				'items' => [
-					'type'       => 'object',
-					'properties' => [
-						'title'  => [
-							'type' => 'string',
-						],
-						'url'    => [
+        'show_in_rest' => [
+            'schema' => [
+                'items' => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'title'  => [
+                            'type' => 'string',
+                        ],
+                        'url'    => [
                             'type' => 'string',
                         ],
                         'site_name' => [
                             'type' => 'string',
+                        ],
+                        'languages' => [
+                            'type'    => 'array',
+                            'control' => 'multiselect',
+                            'options' => [
+                                [ 'value' => 'EN', 'label' => 'English' ],
+                                [ 'value' => 'ES', 'label' => 'Spanish' ]
+                            ],
+                            'default' => [],
+                            'label'   => 'Select States'
                         ],
                         'other_links' => [
                             'type'    => 'array',
@@ -89,16 +196,44 @@ function sgf_post_fields( $fields_array ) {
                                                 'default' => [],
                                                 'label'   => 'Select States'
                                             ],
+                                            'other_links' => [
+                                                'type'    => 'array',
+                                                'control' => 'repeater',
+                                                'default' => [ [ 'link_title' => '' ] ],
+                                                'show_in_rest' => [
+                                                    'schema' => [
+                                                        'items' => [
+                                                            'type' => 'object',
+                                                            'properties' => [
+                                                                'link_title' => [
+                                                                    'type' => 'string',
+                                                                ],
+                                                                'languages' => [
+                                                                    'type'    => 'array',
+                                                                    'control' => 'multiselect',
+                                                                    'options' => [
+                                                                        [ 'value' => 'EN', 'label' => 'English' ],
+                                                                        [ 'value' => 'ES', 'label' => 'Spanish' ],
+                                                                        [ 'value' => 'HY', 'label' => 'Armenian' ],
+                                                                    ],
+                                                                    'default' => [],
+                                                                    'label'   => 'Select States'
+                                                                ],
+                                                            ],
+                                                        ],
+                                                    ],
+                                                ]
+                                            ]
                                         ],
                                     ],
                                 ],
                             ]
                         ]
-					],
-				],
-			],
-		],
-	];
+                    ],
+                ],
+            ],
+        ],
+    ];
 
 	// Color fields in separate panel
 	$fields_array[] = [
@@ -130,54 +265,54 @@ function sgf_post_fields( $fields_array ) {
 	];
 
 	// Multiselect
-	$fields_array[] = [
-		'single'       => true,
-		'meta_key'     => 'related_products',
-		'control'      => 'multiselect',
-		'type'         => 'array',
-		'options'      => ats_get_operators_dropdown(),
-		'show_in_rest' => [
-			'schema' => [
-				'type'  => 'array',
-				'items' => [
-					'type' => 'number'
-				],
-			],
-
-		]
-	];
+// 	$fields_array[] = [
+// 		'single'       => true,
+// 		'meta_key'     => 'related_products',
+// 		'control'      => 'multiselect',
+// 		'type'         => 'array',
+// 		'options'      => ats_get_operators_dropdown(),
+// 		'show_in_rest' => [
+// 			'schema' => [
+// 				'type'  => 'array',
+// 				'items' => [
+// 					'type' => 'number'
+// 				],
+// 			],
+//
+// 		]
+// 	];
 
 	// Multiselect inside repeater
-	$fields_array[] = [
-		'meta_key'     => 'books',
-		'control'      => 'repeater',
-		'type'         => 'array',
-		'default'      => [],
-		'show_in_rest' => [
-			'schema' => [
-				'items' => [
-					'type'       => 'object',
-					'properties' => [
-						'book_name' => [
-							'type'    => 'string',
-							'control' => 'text'
-						],
-						'languages' => [
-							'type'    => 'array',
-							'control' => 'multiselect',
-							'options' => [
-								[ 'value' => 'EN', 'label' => 'English' ],
-								[ 'value' => 'ES', 'label' => 'Spanish' ]
-							],
-							'default' => [],
-							'label'   => 'Select States'
-						],
-					],
-				]
-			],
-		],
-		'panel'        => 'Books Repeater'
-	];
+// 	$fields_array[] = [
+// 		'meta_key'     => 'books',
+// 		'control'      => 'repeater',
+// 		'type'         => 'array',
+// 		'default'      => [],
+// 		'show_in_rest' => [
+// 			'schema' => [
+// 				'items' => [
+// 					'type'       => 'object',
+// 					'properties' => [
+// 						'book_name' => [
+// 							'type'    => 'string',
+// 							'control' => 'text'
+// 						],
+// 						'languages' => [
+// 							'type'    => 'array',
+// 							'control' => 'multiselect',
+// 							'options' => [
+// 								[ 'value' => 'EN', 'label' => 'English' ],
+// 								[ 'value' => 'ES', 'label' => 'Spanish' ]
+// 							],
+// 							'default' => [],
+// 							'label'   => 'Select States'
+// 						],
+// 					],
+// 				]
+// 			],
+// 		],
+// 		'panel'        => 'Books Repeater'
+// 	];
 	$fields_array   = array_map( function ( $field ) {
 		$field['post_type'] = $field['post_type'] ?? 'post';
 		$field['control']   = $field['control'] ?? 'text';

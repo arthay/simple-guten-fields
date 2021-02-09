@@ -1,55 +1,33 @@
-const { withSelect, select, withDispatch } = wp.data;
+const { withSelect, withDispatch } = wp.data;
 const { TextControl } = wp.components;
 
 const ControlField = withSelect(
-  (select, props) => {
-    const { label, meta_key } = props.field;
+  (select, { field: { label, meta_key }, row_index, property_key, values }) => {
+    const value = row_index !== undefined
+      ? values
+      : select('core/editor').getEditedPostAttribute('meta')[meta_key];
 
-    const { row_index, property_key, parent_row_index, parent_property_key, isChild } = props;
-    const value = select('core/editor').getEditedPostAttribute('meta')[meta_key];
     const key = meta_key + row_index + property_key;
 
-    if (typeof row_index === 'undefined') {
-      return { value, key, label: `Set ${label}` };
-    }
-
-    const returnedValue = !isChild ? value[row_index][property_key] : value[parent_row_index][parent_property_key][row_index][property_key];
-
     return {
-      value: returnedValue,
+      value,
       key,
-      label: `Set ${property_key.replace('_', ' ')}`
-    };
+      label: `Set ${(property_key || '').replace('_', ' ') || label}`,
+    }
   }
 )(TextControl);
 
-export default withDispatch(
-  (dispatch, props) => {
-    const { meta_key } = props.field;
-    const { row_index, property_key, isChild, parent_row_index, parent_property_key } = props;
+export default withDispatch((
+  dispatch,
+  { field: { meta_key }, row_index, property_key, onChange }
+) => ({
+  onChange: (value) => {
+    if (onChange) {
+      onChange(value, property_key, row_index);
 
-    return {
-      onChange: (value) => {
-        let newValue = value;
+      return;
+    }
 
-        if (typeof row_index !== 'undefined') {
-          let repeaterValues = select('core/editor').getEditedPostAttribute('meta')?.[meta_key];
-
-          if (!isChild) {
-            newValue = repeaterValues.map((row, innerIndex) => {
-              return innerIndex === row_index ? { ...row, [property_key]: value } : row;
-            });
-          } else {
-            repeaterValues[parent_row_index][parent_property_key] = repeaterValues[parent_row_index][parent_property_key].map((row, innerIndex) => {
-              return innerIndex === row_index ? { ...row, [property_key]: value } : row;
-            });
-
-            newValue = repeaterValues.splice(0);
-          }
-
-        }
-        dispatch('core/editor').editPost({ meta: { [meta_key]: newValue } });
-      }
-    };
+    dispatch('core/editor').editPost({ meta: { [meta_key]: value } });
   }
-)(ControlField);
+}))(ControlField);
