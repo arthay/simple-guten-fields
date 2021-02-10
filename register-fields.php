@@ -70,6 +70,11 @@ function sgf_post_fields( $fields_array ) {
                             'options'  => $month_options,
                             'type'     => 'number',
                         ],
+                        'textarea' => [
+                            'default'  => '',
+                            'control'  => 'textarea',
+                            'type'     => 'text',
+                        ],
                         'languages' => [
                             'type'    => 'array',
                             'control' => 'multiselect',

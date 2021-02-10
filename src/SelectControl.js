@@ -2,16 +2,16 @@ const { withSelect, withDispatch, select } = wp.data;
 const { SelectControl } = wp.components;
 
 
-const ControlField = withSelect((
+const SelectControlField = withSelect((
   select,
-  { field: { meta_key, options, label }, row_index, values }
+  { field: { meta_key, options, label }, property_key, values, isChild }
 ) => {
-  const value = row_index !== undefined
+  const value = isChild
     ? values
     : select('core/editor').getEditedPostAttribute('meta')[meta_key];
 
   return {
-    label: `Set ${label}`,
+    label: `Set ${(property_key || '').replace('_', ' ') || label}`,
     options: options,
     value,
   };
@@ -30,4 +30,4 @@ export default withDispatch((
 
     dispatch('core/editor').editPost({ meta: { [meta_key]: value } });
   }
-}))(ControlField);
+}))(SelectControlField);

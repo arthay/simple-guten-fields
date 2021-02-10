@@ -1,45 +1,38 @@
-const {withSelect, select, withDispatch, useSelect} = wp.data
-const {TextareaControl} = wp.components
+const { withSelect, select, withDispatch, useSelect } = wp.data;
+const { TextareaControl } = wp.components;
 
-const ControlField = withSelect(
-	(select, props) => {
-		const {  label, meta_key} = props.field;
-		const {row_index,property_key} = props
-		const value = select('core/editor').getEditedPostAttribute('meta')[meta_key];
-		const key = meta_key + row_index + property_key;
-		const rows = 20
-		if( typeof row_index === 'undefined' ) {
-			return {value, key, rows, label: `Set ${label}`};
-		}
+const ControlField = withSelect((
+  select,
+  { field: { label, meta_key }, row_index, property_key, isChild, values }
+) => {
+  const value = isChild
+    ? values
+    : select('core/editor').getEditedPostAttribute('meta')[meta_key];
 
-		return {
-			value: value[row_index][property_key],
-			key,
-			rows,
-			label: `Set ${property_key.replace('_', ' ')}`,
+  const key = meta_key + row_index + property_key;
+  const rows = 20;
 
-		};
-	}
-)(TextareaControl);
+  return {
+    value,
+    key,
+    rows,
+    label: `Set ${(property_key || '').replace('_', ' ') || label}`
+  };
+})(TextareaControl);
 
-export default withDispatch(
-	(dispatch, props) => {
-		const {meta_key} = props.field;
-		const {row_index,property_key} = props
+export default withDispatch((
+  dispatch,
+  { field: { meta_key }, row_index, property_key, onChange }
+) => (
+  {
+    onChange: (value) => {
+      if (onChange) {
+        onChange(value, property_key, row_index);
 
+        return;
+      }
 
-		return {
-			onChange: (value) => {
-				let newValue = value;
-
-				if(typeof row_index !== 'undefined') {
-					let repeaterValues = select('core/editor').getEditedPostAttribute('meta')?.[meta_key]
-					newValue = repeaterValues.map((row, innerIndex) => {
-						return innerIndex === row_index ? {...row, [property_key]: value} : row
-					});
-				}
-				dispatch('core/editor').editPost({meta: {[meta_key]: newValue}});
-			}
-		}
-	}
-)(ControlField);
+      dispatch('core/editor').editPost({ meta: { [meta_key]: value } });
+    }
+  }
+))(ControlField);

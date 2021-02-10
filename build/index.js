@@ -10761,59 +10761,41 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
 var _wp$data = wp.data,
     withSelect = _wp$data.withSelect,
-    select = _wp$data.select,
-    withDispatch = _wp$data.withDispatch,
-    useSelect = _wp$data.useSelect;
+    withDispatch = _wp$data.withDispatch;
 var CheckboxControl = wp.components.CheckboxControl;
-var ControlField = withSelect(function (select, props) {
-  var _props$field = props.field,
-      label = _props$field.label,
-      meta_key = _props$field.meta_key;
-  var row_index = props.row_index,
-      property_key = props.property_key;
-  var value = select('core/editor').getEditedPostAttribute('meta')[meta_key];
+var ControlField = withSelect(function (select, _ref) {
+  var _ref$field = _ref.field,
+      label = _ref$field.label,
+      meta_key = _ref$field.meta_key,
+      row_index = _ref.row_index,
+      property_key = _ref.property_key,
+      isChild = _ref.isChild,
+      values = _ref.values;
+  var value = isChild ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
   var key = meta_key + row_index + property_key;
-
-  if (typeof row_index === 'undefined') {
-    return {
-      checked: value,
-      key: key,
-      label: "Set ".concat(label)
-    };
-  }
-
   return {
-    checked: value[row_index][property_key],
+    checked: value,
     key: key,
-    label: "Set ".concat(property_key.replace('_', ' '))
+    label: "Set ".concat((property_key || '').replace('_', ' ') || label)
   };
 })(CheckboxControl);
-/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, props) {
-  var meta_key = props.field.meta_key;
-  var row_index = props.row_index,
-      property_key = props.property_key;
+/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref2) {
+  var meta_key = _ref2.field.meta_key,
+      row_index = _ref2.row_index,
+      property_key = _ref2.property_key,
+      _onChange = _ref2.onChange;
   return {
     onChange: function onChange(value) {
-      var newValue = value;
+      if (_onChange) {
+        _onChange(value, property_key, row_index);
 
-      if (typeof row_index !== 'undefined') {
-        var _select$getEditedPost;
-
-        var repeaterValues = (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
-        newValue = repeaterValues.map(function (row, innerIndex) {
-          return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, value)) : row;
-        });
+        return;
       }
 
       dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValue)
+        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
       });
     }
   };
@@ -10846,9 +10828,13 @@ var ColorPicker = wp.components.ColorPicker;
 
 
 var ColorPickerComponent = function ColorPickerComponent(_ref) {
-  var field = _ref.field;
-  var meta_key = field.meta_key,
-      label = field.label;
+  var _ref$field = _ref.field,
+      label = _ref$field.label,
+      meta_key = _ref$field.meta_key,
+      row_index = _ref.row_index,
+      property_key = _ref.property_key,
+      isChild = _ref.isChild,
+      values = _ref.values;
   var FieldControl = Object(_wordpress_compose__WEBPACK_IMPORTED_MODULE_2__["withState"])({
     showPicker: false
   })(function (_ref2) {
@@ -11376,16 +11362,17 @@ var _wp$data = wp.data,
     withDispatch = _wp$data.withDispatch,
     select = _wp$data.select;
 var SelectControl = wp.components.SelectControl;
-var ControlField = withSelect(function (select, _ref) {
+var SelectControlField = withSelect(function (select, _ref) {
   var _ref$field = _ref.field,
       meta_key = _ref$field.meta_key,
       options = _ref$field.options,
       label = _ref$field.label,
-      row_index = _ref.row_index,
-      values = _ref.values;
-  var value = row_index !== undefined ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
+      property_key = _ref.property_key,
+      values = _ref.values,
+      isChild = _ref.isChild;
+  var value = isChild ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
   return {
-    label: "Set ".concat(label),
+    label: "Set ".concat((property_key || '').replace('_', ' ') || label),
     options: options,
     value: value
   };
@@ -11408,7 +11395,7 @@ var ControlField = withSelect(function (select, _ref) {
       });
     }
   };
-})(ControlField));
+})(SelectControlField));
 
 /***/ }),
 
@@ -11477,62 +11464,45 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
 var _wp$data = wp.data,
     withSelect = _wp$data.withSelect,
     select = _wp$data.select,
     withDispatch = _wp$data.withDispatch,
     useSelect = _wp$data.useSelect;
 var TextareaControl = wp.components.TextareaControl;
-var ControlField = withSelect(function (select, props) {
-  var _props$field = props.field,
-      label = _props$field.label,
-      meta_key = _props$field.meta_key;
-  var row_index = props.row_index,
-      property_key = props.property_key;
-  var value = select('core/editor').getEditedPostAttribute('meta')[meta_key];
+var ControlField = withSelect(function (select, _ref) {
+  var _ref$field = _ref.field,
+      label = _ref$field.label,
+      meta_key = _ref$field.meta_key,
+      row_index = _ref.row_index,
+      property_key = _ref.property_key,
+      isChild = _ref.isChild,
+      values = _ref.values;
+  var value = isChild ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
   var key = meta_key + row_index + property_key;
   var rows = 20;
-
-  if (typeof row_index === 'undefined') {
-    return {
-      value: value,
-      key: key,
-      rows: rows,
-      label: "Set ".concat(label)
-    };
-  }
-
   return {
-    value: value[row_index][property_key],
+    value: value,
     key: key,
     rows: rows,
-    label: "Set ".concat(property_key.replace('_', ' '))
+    label: "Set ".concat((property_key || '').replace('_', ' ') || label)
   };
 })(TextareaControl);
-/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, props) {
-  var meta_key = props.field.meta_key;
-  var row_index = props.row_index,
-      property_key = props.property_key;
+/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref2) {
+  var meta_key = _ref2.field.meta_key,
+      row_index = _ref2.row_index,
+      property_key = _ref2.property_key,
+      _onChange = _ref2.onChange;
   return {
     onChange: function onChange(value) {
-      var newValue = value;
+      if (_onChange) {
+        _onChange(value, property_key, row_index);
 
-      if (typeof row_index !== 'undefined') {
-        var _select$getEditedPost;
-
-        var repeaterValues = (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
-        newValue = repeaterValues.map(function (row, innerIndex) {
-          return innerIndex === row_index ? _objectSpread(_objectSpread({}, row), {}, _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, property_key, value)) : row;
-        });
+        return;
       }
 
       dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValue)
+        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
       });
     }
   };
