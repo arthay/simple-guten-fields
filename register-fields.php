@@ -33,103 +33,6 @@ function sgf_post_fields( $fields_array ) {
 	];
 
 	// Simple repeater
-// 	$fields_array[] = [
-// 		'meta_key'     => 'books1',
-// 		'control'      => 'repeater',
-// 		'type'         => 'array',
-// 		'default'      => [
-// 		    [
-//                 'title'        => '',
-//                 'url'          => '',
-//                  'site_name'   => '',
-//                  'other_links' => [
-//                     [
-//                         'link_title' => '',
-//                         'link'       => '',
-//                     ]
-//                 ]
-//             ]
-//         ],
-// 		'show_in_rest' => [
-// 			'schema' => [
-// 				'items' => [
-// 					'type'       => 'object',
-// 					'properties' => [
-// 						'title'  => [
-// 							'type' => 'string',
-// 						],
-// 						'url'    => [
-//                             'type' => 'string',
-//                         ],
-//                         'site_name' => [
-//                             'type' => 'string',
-//                         ],
-//                         'other_links' => [
-//                             'type'    => 'array',
-//                             'control' => 'repeater',
-//                             'default' => [ [ 'link_title' => '' ] ],
-//                             'show_in_rest' => [
-//                                 'schema' => [
-//                                     'items' => [
-//                                         'type' => 'object',
-//                                         'properties' => [
-//                                             'link_title' => [
-//                                                 'type' => 'string',
-//                                             ],
-//                                             'link' => [
-//                                                 'type' => 'string',
-//                                             ],
-//                                             'languages' => [
-//                                                 'type'    => 'array',
-//                                                 'control' => 'multiselect',
-//                                                 'options' => [
-//                                                     [ 'value' => 'EN', 'label' => 'English' ],
-//                                                     [ 'value' => 'ES', 'label' => 'Spanish' ]
-//                                                 ],
-//                                                 'default' => [],
-//                                                 'label'   => 'Select States'
-//                                             ],
-//                                             'other_links' => [
-//                                                 'type'    => 'array',
-//                                                 'control' => 'repeater',
-//                                                 'default' => [ [ 'link_title' => '' ] ],
-//                                                 'show_in_rest' => [
-//                                                     'schema' => [
-//                                                         'items' => [
-//                                                             'type' => 'object',
-//                                                             'properties' => [
-//                                                                 'link_title' => [
-//                                                                     'type' => 'string',
-//                                                                 ],
-//                                                                 'link' => [
-//                                                                     'type' => 'string',
-//                                                                 ],
-//                                                                 'languages' => [
-//                                                                     'type'    => 'array',
-//                                                                     'control' => 'multiselect',
-//                                                                     'options' => [
-//                                                                         [ 'value' => 'EN', 'label' => 'English' ],
-//                                                                         [ 'value' => 'ES', 'label' => 'Spanish' ]
-//                                                                     ],
-//                                                                     'default' => [],
-//                                                                     'label'   => 'Select States'
-//                                                                 ],
-//                                                             ],
-//                                                         ],
-//                                                     ],
-//                                                 ]
-//                                             ]
-//                                         ],
-//                                     ],
-//                                 ],
-//                             ]
-//                         ]
-// 					],
-// 				],
-// 			],
-// 		],
-// 	];
-
 	$fields_array[] = [
         'meta_key'     => 'books',
         'control'      => 'repeater',
@@ -160,6 +63,12 @@ function sgf_post_fields( $fields_array ) {
                         ],
                         'site_name' => [
                             'type' => 'string',
+                        ],
+                        'month' => [
+                            'default'  => (int) date( 'F' ),
+                            'control'  => 'select',
+                            'options'  => $month_options,
+                            'type'     => 'number',
                         ],
                         'languages' => [
                             'type'    => 'array',
@@ -196,6 +105,12 @@ function sgf_post_fields( $fields_array ) {
                                                 'default' => [],
                                                 'label'   => 'Select States'
                                             ],
+                                            'month' => [
+                                                'default'  => (int) date( 'F' ),
+                                                'control'  => 'select',
+                                                'options'  => $month_options,
+                                                'type'     => 'number',
+                                            ],
                                             'other_links' => [
                                                 'type'    => 'array',
                                                 'control' => 'repeater',
@@ -207,6 +122,12 @@ function sgf_post_fields( $fields_array ) {
                                                             'properties' => [
                                                                 'link_title' => [
                                                                     'type' => 'string',
+                                                                ],
+                                                                'month' => [
+                                                                    'default'  => (int) date( 'F' ),
+                                                                    'control'  => 'select',
+                                                                    'options'  => $month_options,
+                                                                    'type'     => 'number',
                                                                 ],
                                                                 'languages' => [
                                                                     'type'    => 'array',

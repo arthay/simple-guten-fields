@@ -1,7 +1,7 @@
 import InnerControlComponent from "./InnerControlComponent";
 
 const { withDispatch, useSelect } = wp.data;
-const { useMemo, useCallback } = wp.element;
+const { useMemo } = wp.element;
 
 const ControlField = ({
   field: { meta_key, label, show_in_rest, control },
@@ -11,8 +11,9 @@ const ControlField = ({
   values,
   isChild = false,
 }) => {
-  const properties = useMemo(() => show_in_rest?.schema?.items?.properties, [show_in_rest]);
-  const propertiesKeys = useMemo(() => Object.entries(properties).map(item => item[0]), [properties]);
+  const properties = show_in_rest?.schema?.items?.properties;
+
+  const propertiesKeys = Object.entries(properties).map(item => item[0]);
 
   const wrapperStyles = useMemo(() => {
     if (isChild) {
@@ -27,7 +28,7 @@ const ControlField = ({
     return {}
   }, [isChild]);
 
-  const addItem = useCallback(() => {
+  const addItem = () => {
     let newValues = [];
     if (values && values.length) {
       newValues = values.slice(0);
@@ -36,18 +37,18 @@ const ControlField = ({
     newValues.push({});
 
     onChange(newValues);
-  }, [values, onChange]);
+  };
 
-  const removeItem = useCallback((index) => {
+  const removeItem = (index) => {
     if (confirm("Confirm delete")) {
       let newValues = values.slice(0);
       newValues = newValues.filter((obj, loopIndex) => loopIndex !== index);
 
       onChange(newValues);
     }
-  }, [values, onChange]);
+  };
 
-  const onChangeHandler = useCallback((innerValues, inner_property_key, inner_row_index) => {
+  const onChangeHandler = (innerValues, inner_property_key, inner_row_index) => {
     let newValues = values.slice(0);
 
     newValues = newValues.map((row, index) => (
@@ -55,7 +56,7 @@ const ControlField = ({
     ));
 
     onChange(newValues);
-  }, [values]);
+  };
 
   return (
     <div style={wrapperStyles}>
@@ -113,13 +114,13 @@ const RepeaterControl = ({
   onChange,
   editPost
 }) => {
-  if(!values) {
+  if(!isChild) {
     values = useSelect(
       select => select('core/editor').getEditedPostAttribute('meta')?.[field.meta_key]
     );
   }
 
-  const onChangeHandler = useCallback((newValues) => {
+  const onChangeHandler = (newValues) => {
     if(!onChange) {
       editPost(newValues);
 
@@ -127,7 +128,7 @@ const RepeaterControl = ({
     }
 
     onChange(newValues);
-  }, [editPost]);
+  };
 
   return (
     <ControlField
