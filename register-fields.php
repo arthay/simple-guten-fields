@@ -61,6 +61,10 @@ function sgf_post_fields( $fields_array ) {
                         'url'    => [
                             'type' => 'string',
                         ],
+                        'color'    => [
+                            'type' => 'string',
+                            'control'  => 'color',
+                        ],
                         'site_name' => [
                             'type' => 'string',
                         ],
@@ -94,6 +98,10 @@ function sgf_post_fields( $fields_array ) {
                                     'items' => [
                                         'type' => 'object',
                                         'properties' => [
+                                        'color'    => [
+                                                                    'type' => 'string',
+                                                                    'control'  => 'color',
+                                                                ],
                                             'link_title' => [
                                                 'type' => 'string',
                                             ],
@@ -125,6 +133,10 @@ function sgf_post_fields( $fields_array ) {
                                                         'items' => [
                                                             'type' => 'object',
                                                             'properties' => [
+                                                            'color'    => [
+                                                                                        'type' => 'string',
+                                                                                        'control'  => 'color',
+                                                                                    ],
                                                                 'link_title' => [
                                                                     'type' => 'string',
                                                                 ],

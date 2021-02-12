@@ -10831,24 +10831,27 @@ var ColorPickerComponent = function ColorPickerComponent(_ref) {
   var _ref$field = _ref.field,
       label = _ref$field.label,
       meta_key = _ref$field.meta_key,
+      isChild = _ref.isChild,
       row_index = _ref.row_index,
       property_key = _ref.property_key,
-      isChild = _ref.isChild,
-      values = _ref.values;
+      values = _ref.values,
+      onChange = _ref.onChange;
   var FieldControl = Object(_wordpress_compose__WEBPACK_IMPORTED_MODULE_2__["withState"])({
     showPicker: false
   })(function (_ref2) {
+    var _select$getEditedPost;
+
     var showPicker = _ref2.showPicker,
         setState = _ref2.setState,
         handleValueChange = _ref2.handleValueChange;
-    var color = select('core/editor').getEditedPostAttribute('meta')[meta_key];
+    var color = isChild ? values : (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
     return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
       style: {
         margin: '20px'
       }
     }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
       onClick: function onClick() {
-        setState({
+        return setState({
           showPicker: !showPicker
         });
       },
@@ -10863,9 +10866,7 @@ var ColorPickerComponent = function ColorPickerComponent(_ref) {
       }
     })), showPicker && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(ColorPicker, {
       color: color,
-      onChangeComplete: function onChangeComplete(value) {
-        handleValueChange(value);
-      }
+      onChangeComplete: handleValueChange
     }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("button", {
       onClick: function onClick() {
         return handleValueChange({
@@ -10874,19 +10875,21 @@ var ColorPickerComponent = function ColorPickerComponent(_ref) {
       }
     }, "Remove Color"));
   });
-  FieldControl = withSelect(function (select) {
-    return _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, select('core/editor').getEditedPostAttribute('meta')[meta_key]);
-  })(FieldControl);
   FieldControl = withDispatch(function (dispatch) {
     return {
       handleValueChange: function handleValueChange(value) {
+        if (onChange) {
+          onChange(value.hex, property_key, row_index);
+          return;
+        }
+
         dispatch('core/editor').editPost({
           meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value.hex)
         });
       }
     };
   })(FieldControl);
-  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["Fragment"], null, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(FieldControl, null));
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(FieldControl, null);
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (ColorPickerComponent);
