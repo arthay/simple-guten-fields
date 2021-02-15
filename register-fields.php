@@ -61,23 +61,8 @@ function sgf_post_fields( $fields_array ) {
                         'url'    => [
                             'type' => 'string',
                         ],
-                        'color'    => [
-                            'type' => 'string',
-                            'control'  => 'color',
-                        ],
                         'site_name' => [
                             'type' => 'string',
-                        ],
-                        'month' => [
-                            'default'  => (int) date( 'F' ),
-                            'control'  => 'select',
-                            'options'  => $month_options,
-                            'type'     => 'number',
-                        ],
-                        'textarea' => [
-                            'default'  => '',
-                            'control'  => 'textarea',
-                            'type'     => 'text',
                         ],
                         'languages' => [
                             'type'    => 'array',
@@ -98,10 +83,6 @@ function sgf_post_fields( $fields_array ) {
                                     'items' => [
                                         'type' => 'object',
                                         'properties' => [
-                                        'color'    => [
-                                                                    'type' => 'string',
-                                                                    'control'  => 'color',
-                                                                ],
                                             'link_title' => [
                                                 'type' => 'string',
                                             ],
@@ -118,12 +99,6 @@ function sgf_post_fields( $fields_array ) {
                                                 'default' => [],
                                                 'label'   => 'Select States'
                                             ],
-                                            'month' => [
-                                                'default'  => (int) date( 'F' ),
-                                                'control'  => 'select',
-                                                'options'  => $month_options,
-                                                'type'     => 'number',
-                                            ],
                                             'other_links' => [
                                                 'type'    => 'array',
                                                 'control' => 'repeater',
@@ -133,29 +108,8 @@ function sgf_post_fields( $fields_array ) {
                                                         'items' => [
                                                             'type' => 'object',
                                                             'properties' => [
-                                                            'color'    => [
-                                                                                        'type' => 'string',
-                                                                                        'control'  => 'color',
-                                                                                    ],
                                                                 'link_title' => [
                                                                     'type' => 'string',
-                                                                ],
-                                                                'month' => [
-                                                                    'default'  => (int) date( 'F' ),
-                                                                    'control'  => 'select',
-                                                                    'options'  => $month_options,
-                                                                    'type'     => 'number',
-                                                                ],
-                                                                'languages' => [
-                                                                    'type'    => 'array',
-                                                                    'control' => 'multiselect',
-                                                                    'options' => [
-                                                                        [ 'value' => 'EN', 'label' => 'English' ],
-                                                                        [ 'value' => 'ES', 'label' => 'Spanish' ],
-                                                                        [ 'value' => 'HY', 'label' => 'Armenian' ],
-                                                                    ],
-                                                                    'default' => [],
-                                                                    'label'   => 'Select States'
                                                                 ],
                                                             ],
                                                         ],

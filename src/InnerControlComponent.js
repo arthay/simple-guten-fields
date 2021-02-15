@@ -7,6 +7,7 @@ const InnerControlComponent = ({
   property_key,
   repeater_record_label,
   values,
+  title,
   onChange,
 }) => {
   const controlFieldKey = field.control ?? 'text';
@@ -23,6 +24,7 @@ const InnerControlComponent = ({
       values={values[row_index][property_key]}
       onChange={(newValues) => onChange(newValues, property_key, row_index)}
       isChild={true}
+      title={title}
     />
   );
 };

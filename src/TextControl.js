@@ -12,6 +12,7 @@ const ControlField = withSelect(
     return {
       value,
       key,
+      style: { margin: 0 },
       label: `Set ${(property_key || '').replace('_', ' ') || label}`,
     }
   }

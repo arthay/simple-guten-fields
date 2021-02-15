@@ -4,7 +4,7 @@ import CheckboxField from "./CheckboxControl";
 import ColorPickerComponent from "./ColorPicker";
 import SelectControlComponent from "./SelectControl";
 import MediaUpload from "./MediaUpload";
-import RepeaterControl from "./RepeaterControl";
+import RepeaterControl from "./RepeaterControl/index";
 import Multiselect from "./Mulitselect";
 
 const controlsIndex =

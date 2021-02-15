@@ -1,4 +1,5 @@
-import InnerControlComponent from "./InnerControlComponent";
+import InnerControlComponent from "../InnerControlComponent";
+import RepeaterItem from "./RepeaterItem";
 
 const { withDispatch, useSelect } = wp.data;
 const { useMemo } = wp.element;
@@ -9,6 +10,7 @@ const ControlField = ({
   property_key,
   onChange,
   values,
+  title,
   isChild = false,
 }) => {
   const properties = show_in_rest?.schema?.items?.properties;
@@ -18,14 +20,13 @@ const ControlField = ({
   const wrapperStyles = useMemo(() => {
     if (isChild) {
       return {
-        marginLeft: 5,
+        paddingLeft: 5,
+        paddingRight: 5,
         marginTop: 10,
-        border: '1px solid hsl(0, 0%, 80%)',
-        padding: '10px 5px',
       }
     }
 
-    return {}
+    return {};
   }, [isChild]);
 
   const addItem = () => {
@@ -63,35 +64,21 @@ const ControlField = ({
       <h3>{`${label}`} (Repeater field):</h3>
       {Array.isArray(values) && values.map((row, index) => {
         return (
-          <div key={`repeaterValues${index}${meta_key}`}>
-            <div><b>Repeater Record {index + 1}:</b></div>
-            {propertiesKeys.map((propertyKey) => {
-              let innerField = properties[propertyKey];
-              innerField.meta_key = meta_key;
-              innerField.label = label;
-              return (
-                <InnerControlComponent
-                  key={index + property_key}
-                  field={innerField}
-                  parent_control={control}
-                  row_index={index}
-                  property_key={propertyKey}
-                  repeater_record_label={`${label} ${propertyKey}`}
-                  values={values}
-                  control_index={controlsIndex}
-                  onChange={onChangeHandler}
-                />
-              );
-            })}
-            {
-              index > 0
-              && <button onClick={() => removeItem(index)}
-              >
-                Remove line {index + 1}
-              </button>
-            }
-            <hr/>
-          </div>
+          <RepeaterItem
+            key={`repeaterValues${index}${meta_key}`}
+            index={index}
+            property_key={property_key}
+            meta_key={meta_key}
+            controlsIndex={controlsIndex}
+            label={label}
+            properties={properties}
+            propertiesKeys={propertiesKeys}
+            values={values}
+            control={control}
+            title={title}
+            onChange={onChangeHandler}
+            removeItem={removeItem}
+          />
         );
       })}
       <button
@@ -112,6 +99,7 @@ const RepeaterControl = ({
   isChild = false,
   values,
   onChange,
+  title = '',
   editPost
 }) => {
   if(!isChild) {
@@ -138,6 +126,7 @@ const RepeaterControl = ({
       property_key={property_key}
       row_index={row_index}
       isChild={isChild}
+      title={title}
       onChange={onChangeHandler}
     />
   );
