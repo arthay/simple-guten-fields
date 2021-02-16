@@ -11146,9 +11146,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var _wp$data = wp.data,
-    withSelect = _wp$data.withSelect,
-    withDispatch = _wp$data.withDispatch;
+var _wp = wp,
+    _wp$data = _wp.data,
+    dispatch = _wp$data.dispatch,
+    useSelect = _wp$data.useSelect,
+    useCallback = _wp.element.useCallback;
 var SortableMultiValue = Object(react_sortable_hoc__WEBPACK_IMPORTED_MODULE_5__["SortableElement"])(function (props) {
   var onMouseDown = function onMouseDown(e) {
     e.preventDefault();
@@ -11164,11 +11166,7 @@ var SortableMultiValue = Object(react_sortable_hoc__WEBPACK_IMPORTED_MODULE_5__[
 });
 var SortableSelect = Object(react_sortable_hoc__WEBPACK_IMPORTED_MODULE_5__["SortableContainer"])(react_select__WEBPACK_IMPORTED_MODULE_4__["default"]);
 
-var isRepeater = function isRepeater(rowIndex) {
-  return typeof rowIndex !== 'undefined';
-};
-
-var ControlField = withSelect(function (select, _ref) {
+var MultiSelectField = function MultiSelectField(_ref) {
   var _ref$field = _ref.field,
       label = _ref$field.label,
       meta_key = _ref$field.meta_key,
@@ -11177,13 +11175,15 @@ var ControlField = withSelect(function (select, _ref) {
       row_index = _ref.row_index,
       property_key = _ref.property_key,
       values = _ref.values,
-      onSortEndHandler = _ref.onSortEndHandler;
-  values = isRepeater(row_index) ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
+      isChild = _ref.isChild,
+      onChange = _ref.onChange;
+  values = isChild ? values : useSelect(function (select) {
+    return select('core/editor').getEditedPostAttribute('meta')[meta_key];
+  });
   var key = meta_key + row_index + property_key;
-  var isMultiProp = isMulti !== null && isMulti !== void 0 ? isMulti : true;
-  var defaultValue = Array.isArray(values) ? values.map(function (item) {
+  var defaultValue = Array.isArray(values) ? values.map(function (value) {
     var isOption = options.find(function (option) {
-      return option.value == item;
+      return option.value == value;
     });
     var label = values;
 
@@ -11192,14 +11192,51 @@ var ControlField = withSelect(function (select, _ref) {
     }
 
     return {
-      value: item,
+      value: value,
       label: label
     };
   }) : [];
-  return {
-    axis: 'xy',
+  var onChangeHandler = useCallback(function (value) {
+    var flatArray = [];
+
+    if (Array.isArray(value)) {
+      flatArray = value.map(function (option) {
+        return option.value;
+      });
+    } else {
+      // When is multi false we saving the value in array of 1 item to beep the data type array
+      flatArray = [value.value];
+    }
+
+    var newValue = flatArray; // In repeater fields we setting the value on the parent meta value before update
+
+    if (onChange) {
+      onChange(newValue, property_key, row_index);
+      return;
+    }
+
+    dispatch('core/editor').editPost({
+      meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValue)
+    });
+  }, [onChange, property_key, row_index, meta_key, dispatch]);
+  var onSortEndHandler = useCallback(function (_ref2) {
+    var oldIndex = _ref2.oldIndex,
+        newIndex = _ref2.newIndex;
+    var newValues = Object(_utils__WEBPACK_IMPORTED_MODULE_6__["arrayMove"])(values, oldIndex, newIndex);
+
+    if (onChange) {
+      onChange(newValues, property_key, row_index);
+      return;
+    }
+
+    dispatch('core/editor').editPost({
+      meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValues)
+    });
+  }, [values, onChange, property_key, row_index, meta_key]);
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_3__["createElement"])(SortableSelect, {
+    axis: "xy",
     distance: 4,
-    isMulti: isMultiProp,
+    isMulti: isMulti !== null && isMulti !== void 0 ? isMulti : true,
     placeholder: label,
     value: defaultValue,
     key: key,
@@ -11208,64 +11245,12 @@ var ControlField = withSelect(function (select, _ref) {
     components: {
       MultiValue: SortableMultiValue
     },
-    onSortEnd: function onSortEnd(_ref2) {
-      var oldIndex = _ref2.oldIndex,
-          newIndex = _ref2.newIndex;
-      return onSortEndHandler({
-        oldIndex: oldIndex,
-        newIndex: newIndex
-      }, values);
-    }
-  };
-})(SortableSelect);
-ControlField = withDispatch(function (dispatch, _ref3) {
-  var meta_key = _ref3.field.meta_key,
-      row_index = _ref3.row_index,
-      property_key = _ref3.property_key,
-      _onChange = _ref3.onChange;
-  return {
-    onChange: function onChange(value) {
-      var flatArray = [];
+    onChange: onChangeHandler,
+    onSortEnd: onSortEndHandler
+  });
+};
 
-      if (Array.isArray(value)) {
-        flatArray = value.map(function (option) {
-          return option.value;
-        });
-      } else {
-        // When is multi false we saving the value in array of 1 item to beep the data type array
-        flatArray = [value.value];
-      }
-
-      var newValue = flatArray; // In repeater fields we setting the value on the parent meta value before update
-
-      if (_onChange) {
-        _onChange(newValue, property_key, row_index);
-
-        return;
-      }
-
-      dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValue)
-      });
-    },
-    onSortEndHandler: function onSortEndHandler(_ref4, values) {
-      var oldIndex = _ref4.oldIndex,
-          newIndex = _ref4.newIndex;
-      var newValues = Object(_utils__WEBPACK_IMPORTED_MODULE_6__["arrayMove"])(values, oldIndex, newIndex);
-
-      if (_onChange) {
-        _onChange(newValues, property_key, row_index);
-
-        return;
-      }
-
-      dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, newValues)
-      });
-    }
-  };
-})(ControlField);
-/* harmony default export */ __webpack_exports__["default"] = (ControlField);
+/* harmony default export */ __webpack_exports__["default"] = (MultiSelectField);
 
 /***/ }),
 
