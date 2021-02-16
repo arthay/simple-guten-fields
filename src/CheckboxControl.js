@@ -1,28 +1,18 @@
-const { withSelect, withDispatch } = wp.data;
-const { CheckboxControl } = wp.components;
+const {
+  components: { CheckboxControl },
+  data: { dispatch, useSelect },
+  element: { useCallback }
+} = wp;
 
-const ControlField = withSelect((
-  select,
-  { field: { label, meta_key }, row_index, property_key, isChild, values }
-) => {
-
+const CheckboxControlField = ({
+  field: { label, meta_key }, row_index, property_key, isChild, values, onChange
+}) => {
   const value = isChild
     ? values
-    : select('core/editor').getEditedPostAttribute('meta')[meta_key];
+    : useSelect(select => select('core/editor').getEditedPostAttribute('meta')[meta_key]);
   const key = meta_key + row_index + property_key;
 
-  return {
-    checked: value,
-    key,
-    label: `Set ${(property_key || '').replace('_', ' ') || label}`
-  };
-})(CheckboxControl);
-
-export default withDispatch((
-  dispatch,
-  { field: { meta_key }, row_index, property_key, onChange }
-) => ({
-  onChange: (value) => {
+  const onChangeHandler = useCallback((value) => {
     if (onChange) {
       onChange(value, property_key, row_index);
 
@@ -30,5 +20,16 @@ export default withDispatch((
     }
 
     dispatch('core/editor').editPost({ meta: { [meta_key]: value } });
-  }
-}))(ControlField);
+  }, [onChange, meta_key, row_index, property_key, dispatch]);
+
+  return (
+    <CheckboxControl
+      checked={value}
+      key={key}
+      label={`Set ${(property_key || '').replace('_', ' ') || label}`}
+      onChange={onChangeHandler}
+    />
+  );
+};
+
+export default CheckboxControlField;

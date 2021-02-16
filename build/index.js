@@ -10851,46 +10851,49 @@ module.exports = g;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
 
-var _wp$data = wp.data,
-    withSelect = _wp$data.withSelect,
-    withDispatch = _wp$data.withDispatch;
-var CheckboxControl = wp.components.CheckboxControl;
-var ControlField = withSelect(function (select, _ref) {
+
+var _wp = wp,
+    CheckboxControl = _wp.components.CheckboxControl,
+    _wp$data = _wp.data,
+    dispatch = _wp$data.dispatch,
+    useSelect = _wp$data.useSelect,
+    useCallback = _wp.element.useCallback;
+
+var CheckboxControlField = function CheckboxControlField(_ref) {
   var _ref$field = _ref.field,
       label = _ref$field.label,
       meta_key = _ref$field.meta_key,
       row_index = _ref.row_index,
       property_key = _ref.property_key,
       isChild = _ref.isChild,
-      values = _ref.values;
-  var value = isChild ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
+      values = _ref.values,
+      onChange = _ref.onChange;
+  var value = isChild ? values : useSelect(function (select) {
+    return select('core/editor').getEditedPostAttribute('meta')[meta_key];
+  });
   var key = meta_key + row_index + property_key;
-  return {
+  var onChangeHandler = useCallback(function (value) {
+    if (onChange) {
+      onChange(value, property_key, row_index);
+      return;
+    }
+
+    dispatch('core/editor').editPost({
+      meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
+    });
+  }, [onChange, meta_key, row_index, property_key, dispatch]);
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(CheckboxControl, {
     checked: value,
     key: key,
-    label: "Set ".concat((property_key || '').replace('_', ' ') || label)
-  };
-})(CheckboxControl);
-/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref2) {
-  var meta_key = _ref2.field.meta_key,
-      row_index = _ref2.row_index,
-      property_key = _ref2.property_key,
-      _onChange = _ref2.onChange;
-  return {
-    onChange: function onChange(value) {
-      if (_onChange) {
-        _onChange(value, property_key, row_index);
+    label: "Set ".concat((property_key || '').replace('_', ' ') || label),
+    onChange: onChangeHandler
+  });
+};
 
-        return;
-      }
-
-      dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
-      });
-    }
-  };
-})(ControlField));
+/* harmony default export */ __webpack_exports__["default"] = (CheckboxControlField);
 
 /***/ }),
 
@@ -10905,20 +10908,23 @@ var ControlField = withSelect(function (select, _ref) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/compose */ "@wordpress/compose");
-/* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_compose__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
 
 
-var _wp$data = wp.data,
-    withSelect = _wp$data.withSelect,
-    withDispatch = _wp$data.withDispatch,
-    select = _wp$data.select;
-var ColorPicker = wp.components.ColorPicker;
 
+var _wp = wp,
+    ColorPicker = _wp.components.ColorPicker,
+    _wp$data = _wp.data,
+    dispatch = _wp$data.dispatch,
+    useSelect = _wp$data.useSelect,
+    _wp$element = _wp.element,
+    useState = _wp$element.useState,
+    useCallback = _wp$element.useCallback;
 
-var ColorPickerComponent = function ColorPickerComponent(_ref) {
+var ColorPickerControlComponent = function ColorPickerControlComponent(_ref) {
   var _ref$field = _ref.field,
       label = _ref$field.label,
       meta_key = _ref$field.meta_key,
@@ -10927,63 +10933,57 @@ var ColorPickerComponent = function ColorPickerComponent(_ref) {
       property_key = _ref.property_key,
       values = _ref.values,
       onChange = _ref.onChange;
-  var FieldControl = Object(_wordpress_compose__WEBPACK_IMPORTED_MODULE_2__["withState"])({
-    showPicker: false
-  })(function (_ref2) {
-    var _select$getEditedPost;
 
-    var showPicker = _ref2.showPicker,
-        setState = _ref2.setState,
-        handleValueChange = _ref2.handleValueChange;
-    var color = isChild ? values : (_select$getEditedPost = select('core/editor').getEditedPostAttribute('meta')) === null || _select$getEditedPost === void 0 ? void 0 : _select$getEditedPost[meta_key];
-    return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
-      style: {
-        margin: '20px'
-      }
-    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
-      onClick: function onClick() {
-        return setState({
-          showPicker: !showPicker
-        });
-      },
-      style: {
-        display: 'flex'
-      }
-    }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("button", null, "Pick Color for ", label), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("div", {
-      style: {
-        height: '22px',
-        width: '200px',
-        backgroundColor: color
-      }
-    })), showPicker && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(ColorPicker, {
-      color: color,
-      onChangeComplete: handleValueChange
-    }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])("button", {
-      onClick: function onClick() {
-        return handleValueChange({
-          hex: ''
-        });
-      }
-    }, "Remove Color"));
+  var _useState = useState(false),
+      _useState2 = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1___default()(_useState, 2),
+      showPicker = _useState2[0],
+      setShowPicker = _useState2[1];
+
+  var color = isChild ? values : useSelect(function (select) {
+    return select('core/editor').getEditedPostAttribute('meta')[meta_key];
   });
-  FieldControl = withDispatch(function (dispatch) {
-    return {
-      handleValueChange: function handleValueChange(value) {
-        if (onChange) {
-          onChange(value.hex, property_key, row_index);
-          return;
-        }
+  var onChangeHandler = useCallback(function (value) {
+    if (onChange) {
+      onChange(value.hex, property_key, row_index);
+      return;
+    }
 
-        dispatch('core/editor').editPost({
-          meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value.hex)
-        });
-      }
-    };
-  })(FieldControl);
-  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(FieldControl, null);
+    dispatch('core/editor').editPost({
+      meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value.hex)
+    });
+  }, [onChange, property_key, row_index, meta_key, dispatch]);
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__["createElement"])("div", {
+    style: {
+      margin: '20px'
+    }
+  }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__["createElement"])("div", {
+    onClick: function onClick() {
+      return setShowPicker(function (value) {
+        return !value;
+      });
+    },
+    style: {
+      display: 'flex'
+    }
+  }, Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__["createElement"])("button", null, "Pick Color for ", label), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__["createElement"])("div", {
+    style: {
+      height: '22px',
+      width: '200px',
+      backgroundColor: color
+    }
+  })), showPicker && Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__["createElement"])(ColorPicker, {
+    color: color,
+    onChangeComplete: onChangeHandler
+  }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__["createElement"])("button", {
+    onClick: function onClick() {
+      return onChangeHandler({
+        hex: ''
+      });
+    }
+  }, "Remove Color"));
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (ColorPickerComponent);
+/* harmony default export */ __webpack_exports__["default"] = (ColorPickerControlComponent);
 
 /***/ }),
 
@@ -11543,46 +11543,49 @@ var RepeaterControl = function RepeaterControl(_ref2) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
 
-var _wp$data = wp.data,
-    withSelect = _wp$data.withSelect,
-    withDispatch = _wp$data.withDispatch,
-    select = _wp$data.select;
-var SelectControl = wp.components.SelectControl;
-var SelectControlField = withSelect(function (select, _ref) {
+
+var _wp = wp,
+    SelectControl = _wp.components.SelectControl,
+    _wp$data = _wp.data,
+    dispatch = _wp$data.dispatch,
+    useSelect = _wp$data.useSelect,
+    useCallback = _wp.element.useCallback;
+
+var SelectControlField = function SelectControlField(_ref) {
   var _ref$field = _ref.field,
       meta_key = _ref$field.meta_key,
       options = _ref$field.options,
       label = _ref$field.label,
       property_key = _ref.property_key,
+      row_index = _ref.row_index,
       values = _ref.values,
-      isChild = _ref.isChild;
-  var value = isChild ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
-  return {
+      isChild = _ref.isChild,
+      onChange = _ref.onChange;
+  var value = isChild ? values : useSelect(function (select) {
+    return select('core/editor').getEditedPostAttribute('meta')[meta_key];
+  });
+  var onChangeHandler = useCallback(function (value) {
+    if (onChange) {
+      onChange(value, property_key, row_index);
+      return;
+    }
+
+    dispatch('core/editor').editPost({
+      meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
+    });
+  }, [property_key, row_index, meta_key, onChange, dispatch]);
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(SelectControl, {
     label: "Set ".concat((property_key || '').replace('_', ' ') || label),
     options: options,
-    value: value
-  };
-})(SelectControl);
-/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref2) {
-  var meta_key = _ref2.field.meta_key,
-      row_index = _ref2.row_index,
-      property_key = _ref2.property_key,
-      _onChange = _ref2.onChange;
-  return {
-    onChange: function onChange(value) {
-      if (_onChange) {
-        _onChange(value, property_key, row_index);
+    value: value,
+    onChange: onChangeHandler
+  });
+};
 
-        return;
-      }
-
-      dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
-      });
-    }
-  };
-})(SelectControlField));
+/* harmony default export */ __webpack_exports__["default"] = (SelectControlField);
 
 /***/ }),
 
@@ -11657,50 +11660,50 @@ var TextField = function TextField(_ref) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
 
-var _wp$data = wp.data,
-    withSelect = _wp$data.withSelect,
-    select = _wp$data.select,
-    withDispatch = _wp$data.withDispatch,
-    useSelect = _wp$data.useSelect;
-var TextareaControl = wp.components.TextareaControl;
-var ControlField = withSelect(function (select, _ref) {
+
+var _wp = wp,
+    TextareaControl = _wp.components.TextareaControl,
+    _wp$data = _wp.data,
+    dispatch = _wp$data.dispatch,
+    useSelect = _wp$data.useSelect,
+    useCallback = _wp.element.useCallback;
+
+var TextAreaControlField = function TextAreaControlField(_ref) {
   var _ref$field = _ref.field,
       label = _ref$field.label,
       meta_key = _ref$field.meta_key,
       row_index = _ref.row_index,
       property_key = _ref.property_key,
       isChild = _ref.isChild,
-      values = _ref.values;
-  var value = isChild ? values : select('core/editor').getEditedPostAttribute('meta')[meta_key];
+      values = _ref.values,
+      onChange = _ref.onChange;
+  var value = isChild ? values : useSelect(function (select) {
+    return select('core/editor').getEditedPostAttribute('meta')[meta_key];
+  });
   var key = meta_key + row_index + property_key;
-  var rows = 20;
-  return {
+  var onChangeHandler = useCallback(function (value) {
+    if (onChange) {
+      onChange(value, property_key, row_index);
+      return;
+    }
+
+    dispatch('core/editor').editPost({
+      meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
+    });
+  }, [onChange, property_key, row_index, meta_key, dispatch]);
+  return Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__["createElement"])(TextareaControl, {
     value: value,
     key: key,
-    rows: rows,
-    label: "Set ".concat((property_key || '').replace('_', ' ') || label)
-  };
-})(TextareaControl);
-/* harmony default export */ __webpack_exports__["default"] = (withDispatch(function (dispatch, _ref2) {
-  var meta_key = _ref2.field.meta_key,
-      row_index = _ref2.row_index,
-      property_key = _ref2.property_key,
-      _onChange = _ref2.onChange;
-  return {
-    onChange: function onChange(value) {
-      if (_onChange) {
-        _onChange(value, property_key, row_index);
+    rows: 20,
+    label: "Set ".concat((property_key || '').replace('_', ' ') || label),
+    onChange: onChangeHandler
+  });
+};
 
-        return;
-      }
-
-      dispatch('core/editor').editPost({
-        meta: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, meta_key, value)
-      });
-    }
-  };
-})(ControlField));
+/* harmony default export */ __webpack_exports__["default"] = (TextAreaControlField);
 
 /***/ }),
 
@@ -11837,17 +11840,6 @@ function arrayMove(array, from, to) {
 /***/ (function(module, exports) {
 
 (function() { module.exports = window["wp"]["blockEditor"]; }());
-
-/***/ }),
-
-/***/ "@wordpress/compose":
-/*!*********************************!*\
-  !*** external ["wp","compose"] ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-(function() { module.exports = window["wp"]["compose"]; }());
 
 /***/ }),
 

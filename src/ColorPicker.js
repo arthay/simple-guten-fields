@@ -1,8 +1,10 @@
-const { withSelect, withDispatch, select } = wp.data;
-const { ColorPicker } = wp.components;
-import { withState } from '@wordpress/compose';
+const {
+  components: { ColorPicker },
+  data: { dispatch, useSelect },
+  element: { useState, useCallback }
+} = wp;
 
-const ColorPickerComponent = ({
+const ColorPickerControlComponent = ({
   field: { label, meta_key },
   isChild,
   row_index,
@@ -10,48 +12,40 @@ const ColorPickerComponent = ({
   values,
   onChange,
 }) => {
-  let FieldControl = withState({
-    showPicker: false,
-  })(({ showPicker, setState, handleValueChange }) => {
-    const color = isChild
-      ? values
-      : select('core/editor').getEditedPostAttribute('meta')?.[meta_key];
+  const [ showPicker, setShowPicker ] = useState(false);
+  const color = isChild
+    ? values
+    : useSelect(select => select('core/editor').getEditedPostAttribute('meta')[meta_key]);
 
-    return (
-      <div style={{ margin: '20px' }}>
-        <div
-          onClick={() => setState({ showPicker: !showPicker })}
-          style={{ display: 'flex' }}
-        >
-          <button>Pick Color for {label}</button>
-          <div style={{ height: '22px', width: '200px', backgroundColor: color }}/>
-        </div>
-        {
-          showPicker &&
-          <ColorPicker
-            color={color}
-            onChangeComplete={handleValueChange}
-          />
-        }
-        <button onClick={() => handleValueChange({ hex: '' })}>Remove Color</button>
-      </div>
-    );
-  });
+  const onChangeHandler = useCallback((value) => {
+    if (onChange) {
+      onChange(value.hex, property_key, row_index);
 
-  FieldControl =  withDispatch((dispatch) => ({
-    handleValueChange: (value) => {
-      if (onChange) {
-        onChange(value.hex, property_key, row_index);
-
-        return;
-      }
-
-      dispatch('core/editor').editPost({ meta: { [meta_key]: value.hex } });
+      return;
     }
-  }))(FieldControl);
+
+    dispatch('core/editor').editPost({ meta: { [meta_key]: value.hex } });
+  }, [ onChange, property_key, row_index, meta_key, dispatch ]);
 
   return (
-    <FieldControl />
-  )
+    <div style={{ margin: '20px' }}>
+      <div
+        onClick={() => setShowPicker(value => !value)}
+        style={{ display: 'flex' }}
+      >
+        <button>Pick Color for {label}</button>
+        <div style={{ height: '22px', width: '200px', backgroundColor: color }}/>
+      </div>
+      {
+        showPicker &&
+        <ColorPicker
+          color={color}
+          onChangeComplete={onChangeHandler}
+        />
+      }
+      <button onClick={() => onChangeHandler({ hex: '' })}>Remove Color</button>
+    </div>
+  );
 };
-export default ColorPickerComponent;
+
+export default ColorPickerControlComponent;
