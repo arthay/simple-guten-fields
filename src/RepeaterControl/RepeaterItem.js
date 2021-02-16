@@ -1,6 +1,6 @@
 import InnerControlComponent from "../InnerControlComponent";
 
-const { useState, useMemo, useRef, useEffect } = wp.element;
+const { useState, useMemo } = wp.element;
 
 const RepeaterItem = ({
   index,
@@ -16,26 +16,12 @@ const RepeaterItem = ({
   title,
   removeItem
 }) => {
-  const contentRef = useRef(null);
-
   const [isRepeaterOpen, setIsRepeaterOpen] = useState(true);
-  // const [contentHeight, setContentHeight] = useState(0);
 
   const repeaterItemTitle = useMemo(
     () => `${title ? `${title} -> ` : ''}Repeater Record ${index + 1}`, [title, index]
   );
 
-  // useEffect(() => {
-  //   if (contentRef.current) {
-  //     setContentHeight(isRepeaterOpen ? contentRef.current.scrollHeight : 0);
-  //   }
-  //
-  // }, [isRepeaterOpen, values]);
-  //
-  // const onChangeHandler = (value, foo, bar) => {
-  //   setContentHeight(contentRef.current.scrollHeight);
-  //   onChange(value, foo, bar);
-  // }
   return (
     <div style={{
       border: '1px solid hsl(0, 0%, 80%)',
@@ -57,7 +43,6 @@ const RepeaterItem = ({
         </div>
       </div>
       <div
-        ref={contentRef}
         style={{
           transition: "max-height 0.5s",
           overflow: "hidden",
